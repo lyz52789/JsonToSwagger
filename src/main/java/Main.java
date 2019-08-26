@@ -35,7 +35,7 @@ public class Main {
         String result = doPost(name,map);
         System.out.println("////"+result);
         System.out.println(JSONForSwagger.toSchema(doPost(name,map), name+"Resp"));
-        JSONForSwagger.toSchema();
+        JSONForSwagger.toSchema(name+"Resp");
 
     }
     public static String sendPost(String url) {

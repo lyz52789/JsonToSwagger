@@ -74,14 +74,14 @@ public class JSONForSwagger {
 
     public static String toSchema(String json, String name) {
         Map maps = (Map) JSON.parse(json);
-        return SWAGGER_SCH.replaceFirst("name", name).replaceFirst("zProperty", toProperty(maps));
+        return SWAGGER_SCH.replaceFirst("name", name).replaceFirst("zProperty", toProperty(maps,name));
     }
     public static String toSchemaArr(String name,String arrname) {
         return SWAGGER_SCH_ARR.replaceFirst("name", name).replaceFirst("name", arrname);
     }
 
     public static String toSchema(Map maps,String name) {
-        return SWAGGER_SCH.replaceFirst("name",name).replaceFirst("zProperty",toProperty(maps));
+        return SWAGGER_SCH.replaceFirst("name",name).replaceFirst("zProperty",toProperty(maps,name));
     }
 
     public static String filterEmoji(String source) {
@@ -99,7 +99,7 @@ public class JSONForSwagger {
         return source;
     }
 
-    private static String toProperty(Map<String, Object> map) {
+    private static String toProperty(Map<String, Object> map,String name) {
         sb.setLength(0);
         for (Map.Entry<String, Object> entry : map.entrySet()) {
             if (entry.getValue() instanceof JSONArray) {
@@ -116,10 +116,10 @@ public class JSONForSwagger {
 //                    System.out.println(items.size());
 //                    System.out.println(JSON.toJSON(arr.get(0)));
 //                }
-                sb.append(SWAGGER_ARR.replace("name", entry.getKey()));
+                sb.append(SWAGGER_ARR.replace("name",name+"_"+ entry.getKey()));
             } else if (entry.getValue() instanceof JSONObject) {
                 schemas.put(entry.getKey(), entry.getValue());
-                sb.append(SWAGGER_REF.replace("name", entry.getKey()));
+                sb.append(SWAGGER_REF.replace("name",name+"_"+ entry.getKey()));
             } else {
                 sb.append(SWAGGER_PRO.replaceFirst("name", entry.getKey()).replaceFirst("ztype", getType(entry.getValue().getClass().getTypeName())).replaceFirst("value", filterEmoji(entry.getValue().toString())));
             }
@@ -128,9 +128,9 @@ public class JSONForSwagger {
         return sb.toString();
     }
 
-    public static void toSchema(){
+    public static void toSchema(String name){
         for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-            System.out.println(toSchema(entry.getValue().toString(), entry.getKey()+"Bean"));
+            System.out.println(toSchema(entry.getValue().toString(), name+"_"+entry.getKey()+"Bean"));
         }
         int itemsNum = items.size();
         for (Map.Entry<String, String> entry : items.entrySet()) {
@@ -146,19 +146,19 @@ public class JSONForSwagger {
                     items.put(entry.getKey()+"Item"+time, arr.get(0).toString());
                     itemsKey.add(entry.getKey()+"Item"+time);
 
-                    System.out.println(toSchemaArr(entry.getKey()+"Bean",entry.getKey()+"Item"+time+"Bean"));
+                    System.out.println(toSchemaArr(name+"_"+entry.getKey()+"Bean",name+"_"+entry.getKey()+"Item"+time+"Bean"));
                 }
                 else
                 {
-                    items.put(entry.getKey()+"Item", arr.get(0).toString());
-                    itemsKey.add(entry.getKey()+"Item");
+                    items.put(name+"_"+entry.getKey()+"Item", arr.get(0).toString());
+                    itemsKey.add(name+"_"+entry.getKey()+"Item");
 
-                    System.out.println(toSchemaArr(entry.getKey()+"Bean",entry.getKey()+"ItemBean"));
+                    System.out.println(toSchemaArr(name+"_"+entry.getKey()+"Bean",name+"_"+entry.getKey()+"ItemBean"));
                 }
             }
             else
             {
-                System.out.println(toSchema(entry.getValue(), entry.getKey()+"Bean"));
+                System.out.println(toSchema(entry.getValue(), name+"_"+entry.getKey()+"Bean"));
             }
         }
         if (items.size() > itemsNum)
