@@ -20,10 +20,10 @@ public class Main {
     private static String URL = "http://coder.53site.com/WerewolfJP/PHPApi/temp/v/name.php";
 //    private static String URL = "http://coder.53site.com/Werewolf/v/name.php";
     public static void main(String[] args) {
-        String name = "getCanonItem";
+        String name = "groupGetProps";
         System.out.println(JSONForSwagger.toSwagger(name, "获取圣典匙石列表", "圣典"));
         Map map = new HashMap();
-        map.put("userNo","46");
+        map.put("userNo","48");
 //        map.put("itemId","1");
 //        map.put("itemNum","1");
 //        map.put("checkUserNo","46");
@@ -34,8 +34,8 @@ public class Main {
         System.out.println(JSONForSwagger.toSchema(map, name+"Req"));
         String result = doPost(name,map);
         System.out.println("////"+result);
-        System.out.println(JSONForSwagger.toSchema(doPost(name,map), name+"Resp"));
-        JSONForSwagger.toSchema(name+"Resp");
+        System.out.println(JSONForSwagger.toSchema(doPost(name,map), name+"Resp",name));
+        JSONForSwagger.toSchema(name);
 
     }
     public static String sendPost(String url) {
