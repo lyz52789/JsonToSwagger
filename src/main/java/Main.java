@@ -17,11 +17,12 @@ import java.util.*;
 public class Main {
 
     private static final CloseableHttpClient httpclient = HttpClients.createDefault();
-    private static String URL = "http://coder.53site.com/WerewolfJP/PHPApi/temp/v/name.php";
+//    private static String URL = "http://coder.53site.com/WerewolfJP/PHPApi/temp/v/name.php";
 //    private static String URL = "http://coder.53site.com/Werewolf/v/name.php";
+    private static String URL = "http://localhost:8888/Werewolf/v/name.php";
     public static void main(String[] args) {
-        String name = "groupGetProps";
-        System.out.println(JSONForSwagger.toSwagger(name, "获取圣典匙石列表", "圣典"));
+        String name = "openChallengeTreasureChest";
+        System.out.println(JSONForSwagger.toSwagger(name, "开启挑战宝箱", "公会"));
         Map map = new HashMap();
         map.put("userNo","48");
 //        map.put("itemId","1");
