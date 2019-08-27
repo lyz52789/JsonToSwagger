@@ -53,7 +53,7 @@ public class JSONForSwagger {
     private static StringBuffer sb = new StringBuffer();
     private static String SWAGGER_PRO = " *       @OA\\\\Property(property=\"name\", type=\"ztype\",example=\"value\",description=\"手动输入\"),\n";
     private static String SWAGGER_ARR = " *       @OA\\\\Property(property=\"name\", type=\"array\",@OA\\\\Items(ref=\"#/components/schemas/znameBean\")),\n";
-    private static String SWAGGER_REF = " *       @OA\\\\Property(property=\"name\", ref=\"#/components/schemas/znameBean\")),\n";
+    private static String SWAGGER_REF = " *       @OA\\\\Property(property=\"name\", ref=\"#/components/schemas/znameBean\"),\n";
 //     *       @OA\Property(property="groupInfo", ref="#/components/schemas/GroupInfo"),
 
 
@@ -115,10 +115,25 @@ public class JSONForSwagger {
 //                    System.out.println(items.size());
 //                    System.out.println(JSON.toJSON(arr.get(0)));
 //                }
-                sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
+                if (entry.getKey().indexOf(name) == -1)
+                {
+                    sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
+                }
+                else
+                {
+                    sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", entry.getKey()));
+                }
+
             } else if (entry.getValue() instanceof JSONObject) {
                 schemas.put(entry.getKey(), entry.getValue());
-                sb.append(SWAGGER_REF.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
+                if (entry.getKey().indexOf(name) == -1)
+                {
+                    sb.append(SWAGGER_REF.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
+                }
+                else
+                {
+                    sb.append(SWAGGER_REF.replaceFirst("name", entry.getKey()).replace("zname", entry.getKey()));
+                }
             } else {
                 sb.append(SWAGGER_PRO.replaceFirst("name", entry.getKey()).replaceFirst("ztype", getType(entry.getValue().getClass().getTypeName())).replaceFirst("value", filterEmoji(entry.getValue().toString())));
             }
@@ -131,7 +146,16 @@ public class JSONForSwagger {
 
 
         for (Map.Entry<String, Object> entry : schemas.entrySet()) {
-            System.out.println(toSchema(entry.getValue().toString(), name+"_"+entry.getKey()+"Bean", name+"_"+entry.getKey()+"Bean"));
+
+            if (entry.getKey().indexOf(name) == -1)
+            {
+                System.out.println(toSchema(entry.getValue().toString(), name+"_"+entry.getKey()+"Bean", name+"_"+entry.getKey()+"Bean"));
+            }
+            else
+            {
+                System.out.println(toSchema(entry.getValue().toString(), entry.getKey()+"Bean", entry.getKey()+"Bean"));
+            }
+
         }
         int itemsNum = items.size();
         Iterator<Map.Entry<String, String>> iterator = items.entrySet().iterator();
@@ -156,20 +180,41 @@ public class JSONForSwagger {
                     long time = System.nanoTime();
                     items.put(name+"_"+entry.getKey()+"Item"+time, arr.get(0).toString());
                     itemsKey.add(name+"_"+entry.getKey()+"Item"+time);
-
-                    System.out.println(toSchemaArr(entry.getKey()+"Bean",name+"_"+entry.getKey()+"Item"+time+"Bean"));
+                    if (entry.getKey().indexOf(name) == -1)
+                    {
+                        System.out.println(toSchemaArr(entry.getKey()+"Bean",name+"_"+entry.getKey()+"Item"+time+"Bean"));
+                    }
+                    else
+                    {
+                        System.out.println(toSchemaArr(entry.getKey()+"Bean",entry.getKey()+"Item"+time+"Bean"));
+                    }
                 }
                 else
                 {
                     items.put(name+"_"+entry.getKey()+"Item", arr.get(0).toString());
                     itemsKey.add(name+"_"+entry.getKey()+"Item");
 
-                    System.out.println(toSchemaArr(entry.getKey()+"Bean",name+"_"+entry.getKey()+"ItemBean"));
+                    if (entry.getKey().indexOf(name) == -1)
+                    {
+                        System.out.println(toSchemaArr(entry.getKey()+"Bean",name+"_"+entry.getKey()+"ItemBean"));
+                    }
+                    else
+                    {
+                        System.out.println(toSchemaArr(entry.getKey()+"Bean",entry.getKey()+"ItemBean"));
+                    }
                 }
             }
             else
             {
-                System.out.println(toSchema(entry.getValue(), name+"_"+entry.getKey()+"Bean",name+"_"+entry.getKey()+"Bean"));
+                if (entry.getKey().indexOf(name) == -1)
+                {
+                    System.out.println(toSchema(entry.getValue(), name+"_"+entry.getKey()+"Bean",name+"_"+entry.getKey()+"Bean"));
+                }
+                else
+                {
+                    System.out.println(toSchema(entry.getValue(), entry.getKey()+"Bean",entry.getKey()+"Bean"));
+                }
+
             }
         }
         if (items.size() > itemsNum)
