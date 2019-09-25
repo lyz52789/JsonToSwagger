@@ -135,7 +135,10 @@ public class JSONForSwagger {
                     sb.append(SWAGGER_REF.replaceFirst("name", entry.getKey()).replace("zname", entry.getKey()));
                 }
             } else {
-                sb.append(SWAGGER_PRO.replaceFirst("name", entry.getKey()).replaceFirst("ztype", getType(entry.getValue().getClass().getTypeName())).replaceFirst("value", filterEmoji(entry.getValue().toString())));
+                try {
+                    sb.append(SWAGGER_PRO.replaceFirst("name", entry.getKey()).replaceFirst("ztype", getType(entry.getValue().getClass().getTypeName())).replaceFirst("value", filterEmoji(entry.getValue().toString())));
+                }catch (NullPointerException e)
+                {}
             }
         }
 
