@@ -53,6 +53,7 @@ public class JSONForSwagger {
     private static StringBuffer sb = new StringBuffer();
     private static String SWAGGER_PRO = " *       @OA\\\\Property(property=\"name\", type=\"ztype\",example=\"value\",description=\"手动输入\"),\n";
     private static String SWAGGER_ARR = " *       @OA\\\\Property(property=\"name\", type=\"array\",@OA\\\\Items(ref=\"#/components/schemas/znameBean\")),\n";
+    private static String SWAGGER_TYPE_ARR = " *       @OA\\\\Property(property=\"name\", type=\"String[]\",example=\"value\",description=\"手动输入\"),\n";
     private static String SWAGGER_REF = " *       @OA\\\\Property(property=\"name\", ref=\"#/components/schemas/znameBean\"),\n";
 //     *       @OA\Property(property="groupInfo", ref="#/components/schemas/GroupInfo"),
 
@@ -71,8 +72,24 @@ public class JSONForSwagger {
     }
 
     public static String toSchema(String json, String name,String zname) {
-        Map maps = (Map) JSON.parse(json);
-        return SWAGGER_SCH.replaceFirst("name", name).replaceFirst("zProperty", toProperty(maps,zname));
+
+        try{
+//
+            Map maps = (Map) JSON.parse(json);
+            return SWAGGER_SCH.replaceFirst("name", name).replaceFirst("zProperty", toProperty(maps,zname));
+        }
+        catch (ClassCastException e)
+        {
+            System.out.println(name+":"+json);
+            String key = name+"_item";
+//            if (itemsKey.indexOf(key) == -1)
+//            {
+//                items.put(key, json);
+//                itemsKey.add(key);
+//
+//            }
+            return SWAGGER_SCH_ARR.replaceFirst("name", name).replaceFirst("name", key);
+        }
     }
     public static String toSchemaArr(String name,String arrname) {
         return SWAGGER_SCH_ARR.replaceFirst("name", name).replaceFirst("name", arrname);
@@ -108,21 +125,34 @@ public class JSONForSwagger {
                 {
                     return sb.toString();
                 }
-                items.put(name+"_"+entry.getKey(), arr.get(0).toString());
-                itemsKey.add(name+"_"+entry.getKey());
+                try{
+//
+                    Map maps = (Map) JSON.parse(arr.get(0).toString());
+
+                    items.put(name+"_"+entry.getKey(), arr.get(0).toString());
+                    itemsKey.add(name+"_"+entry.getKey());
+                    if (entry.getKey().indexOf(name) == -1)
+                    {
+                        sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
+                    }
+                    else
+                    {
+                        sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", entry.getKey()));
+                    }
+                }
+                catch (ClassCastException e)
+                {
+                    sb.append(SWAGGER_TYPE_ARR.replaceFirst("name", entry.getKey()).replaceFirst("value",arr.toString()));
+                }
+
 //                if ("itemList".equals(entry.getKey()))
 //                {
 //                    System.out.println(items.size());
 //                    System.out.println(JSON.toJSON(arr.get(0)));
 //                }
-                if (entry.getKey().indexOf(name) == -1)
-                {
-                    sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
-                }
-                else
-                {
-                    sb.append(SWAGGER_ARR.replaceFirst("name", entry.getKey()).replace("zname", entry.getKey()));
-                }
+
+
+
 
             } else if (entry.getValue() instanceof JSONObject) {
                 schemas.put(entry.getKey(), entry.getValue());
@@ -231,7 +261,9 @@ public class JSONForSwagger {
         int itemsNum = items.size();
         for (int i = items.size() -1; i >= num; i--)
         {
-            System.out.println(toSchema(items.get(itemsKey.get(i)), itemsKey.get(i)+"Bean",itemsKey.get(i)+"Bean"));
+            String value = items.get(itemsKey.get(i));
+            String key = itemsKey.get(i)+"Bean";
+            System.out.println(toSchema(value, key,key));
         }
 
         if (items.size() > itemsNum)

@@ -3,6 +3,7 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.ParseException;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpPost;
@@ -19,10 +20,11 @@ public class Main {
     private static final CloseableHttpClient httpclient = HttpClients.createDefault();
 //    private static String URL = "http://coder.53site.com/WerewolfJP/PHPApi/temp/v/name.php";
 //    private static String URL = "http://coder.53site.com/Werewolf/v/name.php";
-    private static String URL = "http://localhost:8888/Werewolf/v/name.php";
+//    private static String URL = "http://localhost:8888/Werewolf/v/name.php";
+    private static String URL = "http://localhost:8888/WerewolfJP/PHPApi/v/name.php";
     public static void main(String[] args) {
-        String name = "openChallengeTreasureChest";
-        System.out.println(JSONForSwagger.toSwagger(name, "开启挑战宝箱", "公会"));
+        String name = "animitionGiftPop";
+        System.out.println(JSONForSwagger.toSwagger(name, "试衣间礼物分页", "试衣间"));
         Map map = new HashMap();
         map.put("userNo","48");
 //        map.put("itemId","1");
@@ -32,6 +34,9 @@ public class Main {
 //        map.put("type","0");
 //        map.put("lastUserNo","7803405");
         map.put("cookie","/FPCQ076dl0oibELuO68f/Fj6Rfi7nIZckvdRiBZMEZeg=D");
+//        map.put("type","0");
+        map.put("propId","1");
+//        map.put("role","3");
         System.out.println(JSONForSwagger.toSchema(map, name+"Req"));
         String result = doPost(name,map);
         System.out.println("////"+result);
@@ -74,6 +79,10 @@ public class Main {
                 UrlEncodedFormEntity entity = new UrlEncodedFormEntity(list,"utf-8");
                 httpPost.setEntity(entity);
             }
+            RequestConfig requestConfig = RequestConfig.custom()
+                    .setConnectTimeout(100000).setConnectionRequestTimeout(100000)
+                    .setSocketTimeout(100000).build();
+            httpPost.setConfig(requestConfig);
             HttpResponse response = httpclient.execute(httpPost);
             if(response != null){
                 HttpEntity resEntity = response.getEntity();
