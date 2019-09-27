@@ -23,8 +23,8 @@ public class Main {
 //    private static String URL = "http://localhost:8888/Werewolf/v/name.php";
     private static String URL = "http://localhost:8888/WerewolfJP/PHPApi/v/name.php";
     public static void main(String[] args) {
-        String name = "animitionGiftPop";
-        System.out.println(JSONForSwagger.toSwagger(name, "试衣间礼物分页", "试衣间"));
+        String name = "getUserGiftInGame";
+        System.out.println(JSONForSwagger.toSwagger(name, "游戏内获取用户礼物库存", "其他"));
         Map map = new HashMap();
         map.put("userNo","48");
 //        map.put("itemId","1");
@@ -35,7 +35,7 @@ public class Main {
 //        map.put("lastUserNo","7803405");
         map.put("cookie","/FPCQ076dl0oibELuO68f/Fj6Rfi7nIZckvdRiBZMEZeg=D");
 //        map.put("type","0");
-        map.put("propId","1");
+        map.put("isWatch","1");
 //        map.put("role","3");
         System.out.println(JSONForSwagger.toSchema(map, name+"Req"));
         String result = doPost(name,map);

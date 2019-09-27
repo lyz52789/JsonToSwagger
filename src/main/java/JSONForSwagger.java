@@ -142,7 +142,7 @@ public class JSONForSwagger {
                 }
                 catch (ClassCastException e)
                 {
-                    sb.append(SWAGGER_TYPE_ARR.replaceFirst("name", entry.getKey()).replaceFirst("value",arr.toString()));
+                    sb.append(SWAGGER_TYPE_ARR.replaceFirst("name", entry.getKey()).replaceFirst("value",arr.toString().replaceAll("\"","\'")));
                 }
 
 //                if ("itemList".equals(entry.getKey()))
