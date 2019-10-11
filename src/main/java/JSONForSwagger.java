@@ -49,7 +49,7 @@ public class JSONForSwagger {
             " */";
     private static Map<String, String> items = new ConcurrentHashMap();
     private static List<String> itemsKey = new ArrayList<>();
-    private static Map<String, Object> schemas = new HashMap();
+    private static Map<String, Object> schemas = new ConcurrentHashMap();
     private static StringBuffer sb = new StringBuffer();
     private static String SWAGGER_PRO = " *       @OA\\\\Property(property=\"name\", type=\"ztype\",example=\"value\",description=\"手动输入\"),\n";
     private static String SWAGGER_ARR = " *       @OA\\\\Property(property=\"name\", type=\"array\",@OA\\\\Items(ref=\"#/components/schemas/znameBean\")),\n";
@@ -128,7 +128,7 @@ public class JSONForSwagger {
                 try{
 //
                     Map maps = (Map) JSON.parse(arr.get(0).toString());
-
+//                    System.out.println(JSON.toJSON(maps));
                     items.put(name+"_"+entry.getKey(), arr.get(0).toString());
                     itemsKey.add(name+"_"+entry.getKey());
                     if (entry.getKey().indexOf(name) == -1)
@@ -145,17 +145,10 @@ public class JSONForSwagger {
                     sb.append(SWAGGER_TYPE_ARR.replaceFirst("name", entry.getKey()).replaceFirst("value",arr.toString().replaceAll("\"","\'")));
                 }
 
-//                if ("itemList".equals(entry.getKey()))
-//                {
-//                    System.out.println(items.size());
-//                    System.out.println(JSON.toJSON(arr.get(0)));
-//                }
-
-
-
-
             } else if (entry.getValue() instanceof JSONObject) {
+
                 schemas.put(entry.getKey(), entry.getValue());
+
                 if (entry.getKey().indexOf(name) == -1)
                 {
                     sb.append(SWAGGER_REF.replaceFirst("name", entry.getKey()).replace("zname", name+"_"+entry.getKey()));
@@ -171,15 +164,14 @@ public class JSONForSwagger {
                 {}
             }
         }
-
         return sb.toString();
     }
 
     public static void toSchema(String name){
-
-
+        int schemaNum = schemas.size();
         for (Map.Entry<String, Object> entry : schemas.entrySet()) {
 
+//            System.out.println("key:"+entry.getKey()+", value:" +entry.getValue());
             if (entry.getKey().indexOf(name) == -1)
             {
                 System.out.println(toSchema(entry.getValue().toString(), name+"_"+entry.getKey()+"Bean", name+"_"+entry.getKey()+"Bean"));
@@ -190,14 +182,29 @@ public class JSONForSwagger {
             }
 
         }
-        int itemsNum = items.size();
-        Iterator<Map.Entry<String, String>> iterator = items.entrySet().iterator();
 
-//        while(iterator.hasNext()){
-//            Map.Entry<String, String> entry = iterator.next();
-//            if (JSON.parse(entry.getValue()) instanceof JSONArray)
-//            {}
-//        }
+        if (schemas.size() > schemaNum){
+            int i = 0;
+            for (Map.Entry<String, Object> entry : schemas.entrySet()) {
+
+                if (i>=schemaNum-1)
+                {
+                    if (entry.getKey().indexOf(name) == -1)
+                    {
+                        System.out.println(toSchema(entry.getValue().toString(), name+"_"+entry.getKey()+"Bean", name+"_"+entry.getKey()+"Bean"));
+                    }
+                    else
+                    {
+                        System.out.println(toSchema(entry.getValue().toString(), entry.getKey()+"Bean", entry.getKey()+"Bean"));
+                    }
+                }
+                i++;
+            }
+        }
+
+        int itemsNum = items.size();
+
+        System.out.println(JSON.toJSON(items));
 
         for (Map.Entry<String, String> entry : items.entrySet()) {
             if (JSON.parse(entry.getValue()) instanceof JSONArray) {
